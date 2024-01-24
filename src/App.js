@@ -1,57 +1,65 @@
 import React, { useState } from 'react';
 
-import CourseGoalList from './components/CourseGoals/CourseGoalList/CourseGoalList';
-import CourseInput from './components/CourseGoals/CourseInput/CourseInput';
-import './App.css';
+function App() {
+  const [username, setUsername] = useState('');
+  const [age, setAge] = useState('');
+  const [users,setUsers]= useState([]);
+  const [showWarning, setShowWarning] = useState(false);
 
-const App = () => {
-  const [courseGoals, setCourseGoals] = useState([
-    { text: 'Do all exercises!', id: 'g1' },
-    { text: 'Finish the course!', id: 'g2' }
-  ]);
-
-  const addGoalHandler = enteredText => {
-    setCourseGoals(prevGoals => {
-      const updatedGoals = [...prevGoals];
-      updatedGoals.unshift({ text: enteredText, id: Math.random().toString() });
-      return updatedGoals;
-    });
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
   };
 
-  const deleteItemHandler = goalId => {
-    setCourseGoals(prevGoals => {
-      const updatedGoals = prevGoals.filter(goal => goal.id !== goalId);
-      return updatedGoals;
-    });
+  const handleAgeChange = (event) => {
+    setAge(event.target.value);
   };
 
-  let content = (
-    <p style={{ textAlign: 'center' }}>No goals found. Maybe add one?</p>
-  );
+  const handleAddUser = () => {
+    if (!username.trim() || !age.trim() || +age <=0 ){
+      setShowWarning(true);
+      return ;
+    }
 
-  if (courseGoals.length > 0) {
-    content = (
-      <CourseGoalList items={courseGoals} onDeleteItem={deleteItemHandler} />
-    );
-  }
+    const newUser = {
+      username: username,
+      age : age,
+    }
+    setUsers((prevUsers) => [...prevUsers,newUser]);
+
+    setUsername('');
+    setAge('');
+    setShowWarning(false);
+  };
 
   return (
     <div>
-      <section id="goal-form">
-        <CourseInput onAddGoal={addGoalHandler} />
-      </section>
-      <section id="goals">
-        {content}
-        {/* {courseGoals.length > 0 && (
-          <CourseGoalList
-            items={courseGoals}
-            onDeleteItem={deleteItemHandler}
-          />
-        ) // <p style={{ textAlign: 'center' }}>No goals found. Maybe add one?</p>
-        } */}
-      </section>
+      <label>
+        Username:
+        <input type="text" value={username} onChange={handleUsernameChange} />
+      </label>
+      <label>
+        Age:
+        <input type="number" value={age} onChange={handleAgeChange} />
+      </label>
+      <button onClick={handleAddUser}>Add User</button>
+      {showWarning && (
+        <div style ={{color: 'red',marginTop: '10px'}} >
+          Please enter both username and a valid age (above 0).
+        </div>
+      )}
+      <div>
+        <h2>User:</h2>
+        <ul>
+          {users.map((user,index)=>(
+            <li key ={index} >
+              {user.username},Age: {user.age}
+            </li>
+
+          ))}
+        </ul>
+      </div>
     </div>
   );
-};
+}
 
 export default App;
